@@ -9,7 +9,7 @@ def get_sku_annotation_details(sku_tag):
 
     print('%s summarry'%sku_tag)
     curpath = os.getcwd()
-    annot_path = os.path.join(curpath, 'annotation')
+    annot_path = os.path.join(curpath, 'meta_data')
     data_path = os.path.join(curpath, 'database')
 
     json_in = "fnv_" + sku_tag + ".json"
