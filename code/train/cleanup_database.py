@@ -1,5 +1,3 @@
-
-
 import os
 import configparser
 config = configparser.ConfigParser()
