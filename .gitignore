@@ -4,3 +4,4 @@
 code/inference/dist/
 code/inference/bb_ai_fnv_inference.egg-info/
 code/inference/build/
+*checkpoint.ipynb
