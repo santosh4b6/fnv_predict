@@ -1,7 +1,11 @@
 .idea/
 *.jpg
 *.log
+*.h5
 code/inference/dist/
 code/inference/bb_ai_fnv_inference.egg-info/
 code/inference/build/
 *checkpoint.ipynb
+split_data.json
+augment_data/
+augment_metadata/
