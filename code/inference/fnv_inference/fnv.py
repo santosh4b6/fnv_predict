@@ -69,7 +69,7 @@ class FNVConfig(Config):
 
 class FNVDataset(utils.Dataset):
 
-    def load_csku(self, dataset_dir, meta_dir, sku_product_ids):
+    def load_csku(self, dataset_dir, meta_dir, sku_product_ids, split_data, mode):
         """Load a subset of the Balloon dataset.
         dataset_dir: Root directory of the dataset.
         subset: Subset to load: train or val
@@ -96,11 +96,10 @@ class FNVDataset(utils.Dataset):
 
             # Add images
             for a in annotations:
-                # Get the x, y coordinaets of points of the polygons that make up
-                # the outline of each object instance. There are stores in the
-                # shape_attributes (see json format above)
-                polygons = [r['shape_attributes'] for r in a['regions']]
-                polygons_ids = [r['region_attributes'] for r in a['regions']]
+
+                img_name = a['filename']
+                if(img_name not in split_data[sku_id][mode]):
+                    continue
 
                 # load_mask() needs the image size to convert polygons to masks.
                 # Unfortunately, VIA doesn't include it in JSON, so we must read
@@ -108,6 +107,14 @@ class FNVDataset(utils.Dataset):
                 image_path = os.path.join(sku_data_dir, a['filename'])
                 image = skimage.io.imread(image_path)
                 height, width = image.shape[:2]
+
+                # Get the x, y coordinaets of points of the polygons that make up
+                # the outline of each object instance. There are stores in the
+                # shape_attributes (see json format above)
+                polygons = [r['shape_attributes'] for r in a['regions']]
+                polygons_ids = [r['region_attributes'] for r in a['regions']]
+
+
 
                 self.add_image(
                     "fnv",
