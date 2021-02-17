@@ -1,6 +1,5 @@
-import numpy as np
-import random
 import os
+import ntpath
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -39,6 +38,7 @@ class Train():
         self.dataset_dir = os.path.join(project_folder, train_config['project_folders']['data'])
         self.meta_dir = os.path.join(project_folder, train_config['project_folders']['meta_data'])
         self.model_dir = os.path.join(project_folder, train_config['project_folders']['models'])
+        self.deployment_model_path = os.path.join(project_folder, train_config['project_folders']['deployment'], train_config['model_files']['fnv_model'])
 
         # Split data json file
         self.split_data_filepath = os.path.join(self.meta_dir, train_config['files']['split_data_file'])
@@ -80,6 +80,8 @@ class Train():
 
         return dataset_train, dataset_val
 
+    def copy_model_deployment_folder(self, trained_model_path, deploy_model_path):
+        gu.copyfile(trained_model_path, deploy_model_path)
 
     def run(self):
 
@@ -92,7 +94,13 @@ class Train():
         # config.display()
 
         #Get pretrained model and fnv model paths
-        pretrained_model_path, fnv_model_path = pu.get_model_paths(self.train_config_path)
+        pretrained_model_path = pu.get_previous_model_path(self.train_config_path)
+
+        if(pretrained_model_path == -1):
+            LOGE("[ERROR] Unable to find pretrained model")
+            return
+        else:
+            LOGI("%s is previous latest model file"%(ntpath.basename(pretrained_model_path)))
 
         model = modellib.MaskRCNN(mode="training", config=config,
                                   model_dir=self.model_dir)
@@ -108,6 +116,9 @@ class Train():
                     epochs=3000,
                     layers='all')
 
+        #Copy trained modelfile to deployment file
+        trained_model_path = pu.get_fnvmodel_path(self.train_config_path)
+        self.copy_model_deployment_folder(self, trained_model_path, self.deployment_model_path)
 
 
 if __name__ == "__main__":

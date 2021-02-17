@@ -51,7 +51,14 @@ def get_fnvmodel_path(config_filepath):
     return model_path
 
 #Get model file paths
-def get_model_paths(config_filepath):
+def get_previous_model_path(config_filepath):
     pretrained_model_path = get_pretrainedmodel_path(config_filepath)
     fnv_model_path = get_fnvmodel_path(config_filepath)
-    return pretrained_model_path,fnv_model_path
+
+    if(os.path.exists(pretrained_model_path)):
+        return pretrained_model_path
+    elif(os.path.exists(fnv_model_path)):
+        return fnv_model_path
+    else:
+        LOGE("[ERROR] No previous models found")
+        return -1

@@ -1,7 +1,7 @@
 import logging
 import os
 import json
-
+import shutil
 
 logger = logging.getLogger('fnv_utils')
 LOGI = logger.info
@@ -22,6 +22,9 @@ def load_json(filepath):
         data = {}
         LOGE('%s file does not exists'%filepath)
     return data
+
+def copy_file(trained_model_path, deploy_model_path):
+    shutil.copyfile(trained_model_path, deploy_model_path)
 
 
 
