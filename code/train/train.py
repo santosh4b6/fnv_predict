@@ -81,12 +81,13 @@ class Train():
         return dataset_train, dataset_val
 
     def copy_model_deployment_folder(self, trained_model_path, deploy_model_path):
-        gu.copyfile(trained_model_path, deploy_model_path)
+        LOGI("Copying updated trained model in deployment folder")
+        gu.copy_file(trained_model_path, deploy_model_path)
 
     def run(self):
 
         #Split annotated data and data preparation
-        dataset_train, dataset_val = self.data_preparation()
+        # dataset_train, dataset_val = self.data_preparation()
 
         # train configuration setup
         config = FNVConfig()
@@ -102,23 +103,23 @@ class Train():
         else:
             LOGI("%s is previous latest model file"%(ntpath.basename(pretrained_model_path)))
 
-        model = modellib.MaskRCNN(mode="training", config=config,
-                                  model_dir=self.model_dir)
-
-        # Exclude the last layers because they require a matching
-        # number of classes
-        model.load_weights(pretrained_model_path, by_name=True, exclude=[
-            "mrcnn_class_logits", "mrcnn_bbox_fc",
-            "mrcnn_bbox", "mrcnn_mask"])
-
-        model.train(dataset_train, dataset_val,
-                    learning_rate=config.LEARNING_RATE,
-                    epochs=3000,
-                    layers='all')
+        # model = modellib.MaskRCNN(mode="training", config=config,
+        #                           model_dir=self.model_dir)
+        #
+        # # Exclude the last layers because they require a matching
+        # # number of classes
+        # model.load_weights(pretrained_model_path, by_name=True, exclude=[
+        #     "mrcnn_class_logits", "mrcnn_bbox_fc",
+        #     "mrcnn_bbox", "mrcnn_mask"])
+        #
+        # model.train(dataset_train, dataset_val,
+        #             learning_rate=config.LEARNING_RATE,
+        #             epochs=3000,
+        #             layers='all')
 
         #Copy trained modelfile to deployment file
         trained_model_path = pu.get_fnvmodel_path(self.train_config_path)
-        self.copy_model_deployment_folder(self, trained_model_path, self.deployment_model_path)
+        self.copy_model_deployment_folder(trained_model_path, self.deployment_model_path)
 
 
 if __name__ == "__main__":
