@@ -2229,7 +2229,7 @@ class MaskRCNN():
             #                             histogram_freq=0, write_graph=False, write_images=False),
             keras.callbacks.ModelCheckpoint(self.checkpoint_path, monitor='mrcnn_mask_loss', save_best_only=True,
                                             verbose=1, save_weights_only=True, mode='min', period=1),
-            keras.callbacks.EarlyStopping(monitor='mrcnn_mask_loss', min_delta=0, patience=600, verbose=1, mode='min'),
+            keras.callbacks.EarlyStopping(monitor='mrcnn_mask_loss', min_delta=0, patience=300, verbose=1, mode='min'),
         ]
 
         # Train
