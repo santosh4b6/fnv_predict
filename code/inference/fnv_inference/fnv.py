@@ -69,7 +69,7 @@ class FNVConfig(Config):
 
 class FNVDataset(utils.Dataset):
 
-    def load_csku(self, dataset_dir, meta_dir, sku_product_ids, split_data, mode):
+    def load_csku(self, dataset_dir, meta_dir, sku_product_ids, split_data, mode, aug_data_dir, aug_meta_data_dir):
         """Load a subset of the Balloon dataset.
         dataset_dir: Root directory of the dataset.
         subset: Subset to load: train or val
@@ -81,6 +81,7 @@ class FNVDataset(utils.Dataset):
         for ind in range(len(sku_product_ids)):
             self.add_class("fnv", ind + 1, str(sku_product_ids[ind]))
 
+        #Load original generated images
         for sku_id in sku_product_ids:
             sku_data_dir = os.path.join(dataset_dir, sku_id)
 
@@ -114,7 +115,41 @@ class FNVDataset(utils.Dataset):
                 polygons = [r['shape_attributes'] for r in a['regions']]
                 polygons_ids = [r['region_attributes'] for r in a['regions']]
 
+                self.add_image(
+                    "fnv",
+                    image_id=a['filename'],  # use file name as a unique image id
+                    path=image_path,
+                    width=width, height=height,
+                    polygons=polygons,
+                    polygons_ids=polygons_ids)
 
+        #Load augmented images data
+        for sku_id in sku_product_ids:
+            sku_data_dir = os.path.join(aug_data_dir, sku_id)
+
+            annotations_path = os.path.join(aug_meta_data_dir, "fnv_" + sku_id + "_da_"+mode+".json")
+            if(os.path.exists(annotations_path)):
+                annotations = json.load(open(annotations_path))
+            else:
+                continue
+
+            if ('_via_img_metadata' in annotations.keys()):
+                annotations = annotations['_via_img_metadata']
+                annotations = list(annotations.values())  # don't need the dict keys
+
+            #Ignore unannotated images annotations
+            annotations = [a for a in annotations if a['regions']]
+
+            # Add images
+            for a in annotations:
+
+                img_name = a['filename']
+                image_path = os.path.join(sku_data_dir, mode, img_name)
+                image = skimage.io.imread(image_path)
+                height, width = image.shape[:2]
+
+                polygons = [r['shape_attributes'] for r in a['regions']]
+                polygons_ids = [r['region_attributes'] for r in a['regions']]
 
                 self.add_image(
                     "fnv",

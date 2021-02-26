@@ -2,6 +2,7 @@ import logging
 import os
 import json
 import configparser
+import copy
 
 logger = logging.getLogger('fnv_utils')
 LOGI = logger.info
@@ -62,3 +63,15 @@ def get_previous_model_path(config_filepath):
     else:
         LOGE("[ERROR] No previous models found")
         return -1
+
+
+#Get image corresponding annotation
+def get_image_annotation(image_name, annotations):
+    img_annot = {}
+    only_imgs_annots = annotations['_via_img_metadata']
+    for key in only_imgs_annots.keys():
+        if (only_imgs_annots[key]['filename'] == image_name):
+            img_annot = copy.deepcopy(only_imgs_annots[key])
+    if(not bool(img_annot)):
+        LOGE("[ERROR] %s annotation not found"%image_name)
+    return img_annot

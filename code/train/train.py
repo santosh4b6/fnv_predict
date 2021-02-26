@@ -8,6 +8,8 @@ warnings.filterwarnings('ignore')
 import utils.general_utils as gu
 #import project related utils
 import utils.project_utils as pu
+import clean_augmented_data as cda
+import generate_augmented_data as gda
 
 train_config_path = 'train_config.ini'
 
@@ -40,6 +42,10 @@ class Train():
         self.model_dir = os.path.join(project_folder, train_config['project_folders']['models'])
         self.deployment_model_path = os.path.join(project_folder, train_config['project_folders']['deployment'], train_config['model_files']['fnv_model'])
 
+        # Data Augment base folders
+        self.aug_data_dir = os.path.join(project_folder, train_config['project_folders']['aug_data'])
+        self.aug_meta_data_dir = os.path.join(project_folder, train_config['project_folders']['aug_meta_data'])
+
         # Split data json file
         self.split_data_filepath = os.path.join(self.meta_dir, train_config['files']['split_data_file'])
 
@@ -53,7 +59,7 @@ class Train():
         sku_product_ids = pu.get_sku_ids(self.train_config_path)
 
         # dataset_train.load_balloon(args.dataset, "train")
-        dataset.load_csku(self.dataset_dir, self.meta_dir, sku_product_ids, split_data, mode)
+        dataset.load_csku(self.dataset_dir, self.meta_dir, sku_product_ids, split_data, mode, self.aug_data_dir, self.aug_meta_data_dir)
         dataset.prepare()
 
         LOGI('\n')
@@ -67,10 +73,16 @@ class Train():
 
     def data_preparation(self):
         # Split data into train, val and test for all the skus
-        split_data = SplitData(train_config_path)
+        split_data = SplitData(self.train_config_path)
         split_data.data_split()
 
-        #data augmentation TBD
+        #Clean old data augmentation
+        clean_da = cda.CleanAugmentedData(self.train_config_path)
+        clean_da.run()
+
+        #Generate augmented data
+        generate_da = gda.GenerateAugmentedData(self.train_config_path)
+        generate_da.run()
 
         # Training dataset.
         dataset_train = self.load_data("train")
