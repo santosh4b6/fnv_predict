@@ -68,24 +68,24 @@ def get_image_aug_flip(image_name, dataset_dir, sku_id, aug_data_dir, img_annot,
             img_flip = cv2.flip(img, 1)
             for ind in range(tot_regions):
                 X = img_annot_flip['regions'][ind]['shape_attributes']['all_points_x']
-                X = [img.shape[1] - val - 1 for val in X]
+                X = [gu.bound_val((img.shape[1] - val - 1), 0,  (img.shape[1]-1)) for val in X]
                 img_annot_flip['regions'][ind]['shape_attributes']['all_points_x'] = X
         #Vertical flip
         elif(tag == 'vf'):
             img_flip = cv2.flip(img, 0)
             for ind in range(tot_regions):
                 Y = img_annot_flip['regions'][ind]['shape_attributes']['all_points_y']
-                Y = [img.shape[0] - val - 1 for val in Y]
+                Y = [gu.bound_val((img.shape[0] - val - 1), 0,  (img.shape[0]-1)) for val in Y]
                 img_annot_flip['regions'][ind]['shape_attributes']['all_points_y'] = Y
         #Horizontal and Vertical flip
         elif(tag == 'bf'):
             img_flip = cv2.flip(img, -1)
             for ind in range(tot_regions):
                 X = img_annot_flip['regions'][ind]['shape_attributes']['all_points_x']
-                X = [img.shape[1] - val - 1 for val in X]
+                X = [gu.bound_val((img.shape[1] - val - 1), 0,  (img.shape[1]-1)) for val in X]
                 img_annot_flip['regions'][ind]['shape_attributes']['all_points_x'] = X
                 Y = img_annot_flip['regions'][ind]['shape_attributes']['all_points_y']
-                Y = [img.shape[0] - val - 1 for val in Y]
+                Y = [gu.bound_val((img.shape[0] - val - 1), 0,  (img.shape[0]-1)) for val in Y]
                 img_annot_flip['regions'][ind]['shape_attributes']['all_points_y'] = Y
         #Unsupported flip mode
         else:

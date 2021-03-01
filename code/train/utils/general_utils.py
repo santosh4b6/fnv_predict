@@ -37,6 +37,10 @@ def clean_dir(folder_path):
         shutil.rmtree(folder_path)
     create_folder(folder_path)
 
+#Bound value between max and minimum value
+def bound_val(val, min_val, max_val):
+    return min(max(val, min_val), max_val)
+
 
 
 
